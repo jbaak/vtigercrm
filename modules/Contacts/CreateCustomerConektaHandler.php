@@ -1,6 +1,12 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 require_once('include/utils/utils.php');
+require 'Services/ClientConekta.php';
+
+use Vtiger\Modules\Services\ClientConekta;
 
 class CreateCustomerConektaHandler extends VTEventHandler 
 {
@@ -10,18 +16,35 @@ class CreateCustomerConektaHandler extends VTEventHandler
 		if ($moduleName == 'Contacts' && $eventType == 'vtiger.entity.beforesave') {
 			$idContacto = $entity->getId();
 			$camposContacto = $entity->getData();
-			
-			//Estos son los campos del contacto:
-			echo '<pre>';
-			print_r($camposContacto);
-			echo '</pre>';
-			
-			//$entity->get('nombre_campo') para obtener el valor de un campo.
-			//$entity->set('nombre_campo', 'valor') para establecer el valor de un campo.
-			
-			//Este exit sirve para ver en el navegador el output (echos) de arriba. 
-			//Es necesario quitarlo para que al guardar el contacto en la vista de edición, regrese al usuario a la vista de detalle.
-			exit; 
+
+            if ($entity->get('firstname') && $entity->get('email')) {
+                $phone = $entity->get('phone')? $entity->get('phone'): '';
+                $data = [
+                    "email" => $entity->get('email'),
+                    "name" => $entity->get('firstname').' '.$entity->get('lastname'),
+                    "phone" => $phone,
+                    ];
+
+                $clientConekta =  new ClientConekta('https://api.conekta.io/', 'key_rmyiaII7J2bHfsoztNmQ2me');
+                
+                try {
+                    if ($entity->get('otherphone')) {
+                        //update customer
+                        $res = $clientConekta->updateRecord($entity->get('otherphone'), $data, 'customers');
+                    } else {
+                        //new customer
+                        $res = $clientConekta->createRecord($data, 'customers');
+    
+                        if ($res['id']) {
+                            $entity->set('otherphone', $res['id']);
+                        }
+                    }
+                } catch (Exception $e) {
+                    die($e->getMessage());
+                }
+
+            }
+               
 		}
 	}
 }
