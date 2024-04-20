@@ -9,8 +9,12 @@
 </head>
 <body>
     <div class="container">
-        <h2>Agregar contacto a vtigercrm</h2>
-            <form id="contactForm" method="POST" action="procesa.php">
+        <div class="row">
+          <div class="col-2"></div>
+          <div class="col-8">
+            <div class="mt-5"></div>
+            <h2>Agregar contacto a vtigercrm</h2>
+            <form class="mt-5" id="contactForm" method="POST" action="procesa.php">
                 <div class="form-group">
                   <label for="name" class="form-label">Nombre:</label>
                   <input type="text" class="form-control" id="name" name="name" required>
@@ -31,8 +35,17 @@
                     <button type="submit" id="send" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
-        <div id="response">
-
+            <div id="response" class="mt-2">
+              <div class="alert alert-success d-none" role="alert" id="alert-success">
+                A simple success alert—check it out!
+              </div>
+              <div class="alert alert-danger d-none" role="alert" id="alert-error">
+                A simple success alert—check it out!
+              </div>
+            </div>
+          <div class="col-2"></div>
+        </div>
+        
         </div>
       </div>
       <script src="js/jquery.min.js"></script>
